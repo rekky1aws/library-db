@@ -22,7 +22,7 @@ class Borrower
     private ?string $firstname = null;
 
     #[ORM\Column(length: 190)]
-    private ?string $phine_number = null;
+    private ?string $phone_number = null;
 
     #[ORM\Column]
     private ?bool $active = null;
@@ -74,14 +74,14 @@ class Borrower
         return $this;
     }
 
-    public function getPhineNumber(): ?string
+    public function getPhoneNumber(): ?string
     {
-        return $this->phine_number;
+        return $this->phone_number;
     }
 
-    public function setPhineNumber(string $phine_number): self
+    public function setPhoneNumber(string $phone_number): self
     {
-        $this->phine_number = $phine_number;
+        $this->phone_number = $phone_number;
 
         return $this;
     }

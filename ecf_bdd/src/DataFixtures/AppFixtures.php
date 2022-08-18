@@ -23,6 +23,7 @@ class AppFixtures extends Fixture
 
         $this->loadAuthors($manager, $faker);
         $this->loadGenres($manager, $faker);
+        // $this->loadBorrows($manager, $faker);
     }
 
     public function loadAuthors(ObjectManager $manager, FakerGenerator $faker): void
@@ -67,26 +68,9 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-    /*
-    | id | nom              | description |
-    |----|------------------|-------------|
-    | 1  | poésie           | NULL        |
-    | 2  | nouvelle         | NULL        |
-    | 3  | roman historique | NULL        |
-    | 4  | roman d'amour    | NULL        |
-    | 5  | roman d'aventure | NULL        |
-    | 6  | science-fiction  | NULL        |
-    | 7  | fantasy          | NULL        |
-    | 8  | biographie       | NULL        |
-    | 9  | conte            | NULL        |
-    | 10 | témoignage       | NULL        |
-    | 11 | théâtre          | NULL        |
-    | 12 | essai            | NULL        |
-    | 13 | journal intime   | NULL        |
-    */
     public function loadGenres(ObjectManager $manager, FakerGenerator $faker): void
     {
-        // Authors
+        // Genres
         $genreDatas = [
             [
                 'name' => 'poésie'
@@ -135,6 +119,49 @@ class AppFixtures extends Fixture
             $genre->setDescription("");
 
             $manager->persist($genre);
+        }
+
+        $manager->flush();
+    }
+
+    /*     
+    | id | nom | prenom | tel       | actif | created_at        | updated_at        | user_id |
+    |----|-----|--------|-----------|-------|-------------------|-------------------|---------|
+    | 1  | foo | foo    | 123456789 | true  | 20200101 10:00:00 | 20200101 10:00:00 | 2       |
+    | 2  | bar | bar    | 123456789 | false | 20200201 11:00:00 | 20200501 12:00:00 | 3       |
+    | 3  | baz | baz    | 123456789 | true  | 20200301 12:00:00 | 20200301 12:00:00 | 4       |
+
+    Données de test : */
+
+    public function loadBorrows(ObjectManager $manager, FakerGenerator $faker): void
+    {
+        // Borrowers
+        $borrowerDatas = [
+            [
+                'lastname' => 'foo',
+                'firstname' => 'foo',
+                'phone_number' => '123456789',
+                'active' => true,
+                'created_at' => DateTimeImmutable::createFromFormat('Y-m-d H:i:s', '2020-01-01 10:00:00'),
+                'update_at' => DateTimeImmutable::createFromFormat('Y-m-d H:i:s', '2020-01-01 10:00:00')
+            ],
+        ];
+
+        foreach ($borrowerDatas as $borrowerData) {
+            $borrower = new Borrower();
+            $borrower->setLastname($borrowerData['lastname']);
+            $borrower->setFirstname($borrowerData['firstname']);
+
+            $manager->persist($borrower);
+        }
+
+        // 100 emprunteurs dont les données sont générées aléatoirement.
+        for ($i = 0; $i < 500; $i++) {
+            $borrower = new Borrower();
+            $borrower->setLastname($faker->lastName());
+            $borrower->setFirstname($faker->firstName());
+
+            $manager->persist($borrower);
         }
 
         $manager->flush();
