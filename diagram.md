@@ -27,7 +27,7 @@ classDiagram
     class Book {
         title
         edition_year
-        page_number
+        page_count
         isbn_code
     }
     class Author {
