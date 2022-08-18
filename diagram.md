@@ -40,7 +40,6 @@ classDiagram
     }
 
     User "0,n" -- "1,n" Role
-    Borrow "0,1" -- "0,1" User
     Borrow "1,n" -- "1,1" Borrower
     User "1,1" -- "0,1" Borrower
     Book "1,1" -- "0,n" Borrow
