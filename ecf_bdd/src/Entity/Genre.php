@@ -22,7 +22,7 @@ class Genre
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[ORM\ManyToMany(targetEntity: Book::class, mappedBy: 'genre')]
+    #[ORM\ManyToMany(targetEntity: Book::class, mappedBy: 'genres')]
     private Collection $books;
 
     public function __construct()

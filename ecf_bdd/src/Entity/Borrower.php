@@ -3,7 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BorrowerRepository;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BorrowerRepository::class)]
@@ -21,7 +22,7 @@ class Borrower
     private ?string $firstname = null;
 
     #[ORM\Column(length: 190)]
-    private ?string $phone_number = null;
+    private ?string $phine_number = null;
 
     #[ORM\Column]
     private ?bool $active = null;
@@ -29,12 +30,20 @@ class Borrower
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\OneToMany(mappedBy: 'borrower', targetEntity: Borrow::class)]
+    private Collection $borrow;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    public function __construct()
+    {
+        $this->borrow = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -65,14 +74,14 @@ class Borrower
         return $this;
     }
 
-    public function getPhoneNumber(): ?string
+    public function getPhineNumber(): ?string
     {
-        return $this->phone_number;
+        return $this->phine_number;
     }
 
-    public function setPhoneNumber(string $phone_number): self
+    public function setPhineNumber(string $phine_number): self
     {
-        $this->phone_number = $phone_number;
+        $this->phine_number = $phine_number;
 
         return $this;
     }
@@ -101,14 +110,44 @@ class Borrower
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): self
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Borrow>
+     */
+    public function getBorrow(): Collection
+    {
+        return $this->borrow;
+    }
+
+    public function addBorrow(Borrow $borrow): self
+    {
+        if (!$this->borrow->contains($borrow)) {
+            $this->borrow->add($borrow);
+            $borrow->setBorrower($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBorrow(Borrow $borrow): self
+    {
+        if ($this->borrow->removeElement($borrow)) {
+            // set the owning side to null (unless already changed)
+            if ($borrow->getBorrower() === $this) {
+                $borrow->setBorrower(null);
+            }
+        }
 
         return $this;
     }

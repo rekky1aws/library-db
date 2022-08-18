@@ -3,7 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -15,7 +16,7 @@ class User
     private ?int $id = null;
 
     #[ORM\Column(length: 190)]
-    private ?string $email = null;
+    private ?string $mail = null;
 
     #[ORM\Column(length: 190)]
     private ?string $password = null;
@@ -26,32 +27,30 @@ class User
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updated_at = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Role $roles = null;
+    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users')]
+    private Collection $roles;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Borrower $borrower = null;
-
-    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
-    private ?Borrow $borrow = null;
+    public function __construct()
+    {
+        $this->roles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getMail(): ?string
     {
-        return $this->email;
+        return $this->mail;
     }
 
-    public function setEmail(string $email): self
+    public function setMail(string $mail): self
     {
-        $this->email = $email;
+        $this->mail = $mail;
 
         return $this;
     }
@@ -92,50 +91,38 @@ class User
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): self
     {
         $this->updated_at = $updated_at;
 
         return $this;
     }
 
-    public function getRoles(): ?Role
+    /**
+     * @return Collection<int, Role>
+     */
+    public function getRoles(): Collection
     {
         return $this->roles;
     }
 
-    public function setRoles(?Role $roles): self
+    public function addRole(Role $role): self
     {
-        $this->roles = $roles;
+        if (!$this->roles->contains($role)) {
+            $this->roles->add($role);
+        }
 
         return $this;
     }
 
-    public function getBorrower(): ?Borrower
+    public function removeRole(Role $role): self
     {
-        return $this->borrower;
-    }
-
-    public function setBorrower(?Borrower $borrower): self
-    {
-        $this->borrower = $borrower;
-
-        return $this;
-    }
-
-    public function getBorrow(): ?Borrow
-    {
-        return $this->borrow;
-    }
-
-    public function setBorrow(?Borrow $borrow): self
-    {
-        $this->borrow = $borrow;
+        $this->roles->removeElement($role);
 
         return $this;
     }

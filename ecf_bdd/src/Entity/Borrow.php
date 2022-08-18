@@ -19,12 +19,13 @@ class Borrow
     #[ORM\Column]
     private ?\DateTimeImmutable $return_date = null;
 
-    #[ORM\OneToOne(mappedBy: 'borrow', cascade: ['persist', 'remove'])]
-    private ?User $user = null;
+    #[ORM\ManyToOne(inversedBy: 'borrows')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Book $book = null;
 
     #[ORM\ManyToOne(inversedBy: 'borrow')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Book $book = null;
+    private ?Borrower $borrower = null;
 
     public function getId(): ?int
     {
@@ -55,28 +56,6 @@ class Borrow
         return $this;
     }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        // unset the owning side of the relation if necessary
-        if ($user === null && $this->user !== null) {
-            $this->user->setBorrow(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($user !== null && $user->getBorrow() !== $this) {
-            $user->setBorrow($this);
-        }
-
-        $this->user = $user;
-
-        return $this;
-    }
-
     public function getBook(): ?Book
     {
         return $this->book;
@@ -85,6 +64,18 @@ class Borrow
     public function setBook(?Book $book): self
     {
         $this->book = $book;
+
+        return $this;
+    }
+
+    public function getBorrower(): ?Borrower
+    {
+        return $this->borrower;
+    }
+
+    public function setBorrower(?Borrower $borrower): self
+    {
+        $this->borrower = $borrower;
 
         return $this;
     }

@@ -18,28 +18,29 @@ class Book
     #[ORM\Column(length: 190)]
     private ?string $title = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $edition_year = null;
+    #[ORM\Column(length: 190, nullable: true)]
+    private ?string $edition_year = null;
 
     #[ORM\Column]
-    private ?int $page_number = null;
+    private ?int $page_count = null;
 
     #[ORM\Column(length: 190)]
     private ?string $isbn_code = null;
 
-    #[ORM\OneToMany(mappedBy: 'book', targetEntity: Borrow::class)]
-    private Collection $borrow;
+    #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'books')]
+    private Collection $genres;
 
     #[ORM\ManyToOne(inversedBy: 'books')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Author $author = null;
 
-    #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'books')]
-    private Collection $genre;
+    #[ORM\OneToMany(mappedBy: 'book', targetEntity: Borrow::class)]
+    private Collection $borrows;
 
     public function __construct()
     {
-        $this->borrow = new ArrayCollection();
-        $this->genre = new ArrayCollection();
+        $this->genres = new ArrayCollection();
+        $this->borrows = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -59,26 +60,26 @@ class Book
         return $this;
     }
 
-    public function getEditionYear(): ?int
+    public function getEditionYear(): ?string
     {
         return $this->edition_year;
     }
 
-    public function setEditionYear(?int $edition_year): self
+    public function setEditionYear(?string $edition_year): self
     {
         $this->edition_year = $edition_year;
 
         return $this;
     }
 
-    public function getPageNumber(): ?int
+    public function getPageCount(): ?int
     {
-        return $this->page_number;
+        return $this->page_count;
     }
 
-    public function setPageNumber(int $page_number): self
+    public function setPageCount(int $page_count): self
     {
-        $this->page_number = $page_number;
+        $this->page_count = $page_count;
 
         return $this;
     }
@@ -96,31 +97,25 @@ class Book
     }
 
     /**
-     * @return Collection<int, Borrow>
+     * @return Collection<int, Genre>
      */
-    public function getBorrow(): Collection
+    public function getGenres(): Collection
     {
-        return $this->borrow;
+        return $this->genres;
     }
 
-    public function addBorrow(Borrow $borrow): self
+    public function addGenre(Genre $genre): self
     {
-        if (!$this->borrow->contains($borrow)) {
-            $this->borrow->add($borrow);
-            $borrow->setBook($this);
+        if (!$this->genres->contains($genre)) {
+            $this->genres->add($genre);
         }
 
         return $this;
     }
 
-    public function removeBorrow(Borrow $borrow): self
+    public function removeGenre(Genre $genre): self
     {
-        if ($this->borrow->removeElement($borrow)) {
-            // set the owning side to null (unless already changed)
-            if ($borrow->getBook() === $this) {
-                $borrow->setBook(null);
-            }
-        }
+        $this->genres->removeElement($genre);
 
         return $this;
     }
@@ -138,25 +133,31 @@ class Book
     }
 
     /**
-     * @return Collection<int, Genre>
+     * @return Collection<int, Borrow>
      */
-    public function getGenre(): Collection
+    public function getBorrows(): Collection
     {
-        return $this->genre;
+        return $this->borrows;
     }
 
-    public function addGenre(Genre $genre): self
+    public function addBorrow(Borrow $borrow): self
     {
-        if (!$this->genre->contains($genre)) {
-            $this->genre->add($genre);
+        if (!$this->borrows->contains($borrow)) {
+            $this->borrows->add($borrow);
+            $borrow->setBook($this);
         }
 
         return $this;
     }
 
-    public function removeGenre(Genre $genre): self
+    public function removeBorrow(Borrow $borrow): self
     {
-        $this->genre->removeElement($genre);
+        if ($this->borrows->removeElement($borrow)) {
+            // set the owning side to null (unless already changed)
+            if ($borrow->getBook() === $this) {
+                $borrow->setBook(null);
+            }
+        }
 
         return $this;
     }
