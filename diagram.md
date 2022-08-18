@@ -1,5 +1,6 @@
 ```mermaid
 classDiagram
+    direction LR
 	class Role {
 		name
 		description
@@ -40,8 +41,8 @@ classDiagram
     }
 
     User "0,n" -- "1,n" Role
+    Borrower "0,1" -- "1,1" User
     Borrow "1,n" -- "1,1" Borrower
-    User "1,1" -- "0,1" Borrower
     Book "1,1" -- "0,n" Borrow
     Book "1,n" -- "0,1" Author
     Book "1,n" -- "1,n" Genre
