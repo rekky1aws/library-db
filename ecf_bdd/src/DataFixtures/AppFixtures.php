@@ -10,6 +10,7 @@ use App\Entity\Genre;
 use App\Entity\Role;
 use App\Entity\User;
 
+use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
@@ -143,7 +144,8 @@ class AppFixtures extends Fixture
                 'phone_number' => '123456789',
                 'active' => true,
                 'created_at' => DateTimeImmutable::createFromFormat('Y-m-d H:i:s', '2020-01-01 10:00:00'),
-                'update_at' => DateTimeImmutable::createFromFormat('Y-m-d H:i:s', '2020-01-01 10:00:00')
+                'update_at' => DateTimeImmutable::createFromFormat('Y-m-d H:i:s', '2020-01-01 10:00:00'),
+                'user' => 0
             ],
         ];
 
